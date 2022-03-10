@@ -36,7 +36,7 @@ function App() {
 			<Hero />
 			<About />
 			<Roadmap />
-			<Team />
+			{/* <Team />*/}
 			<Footer />
 		</div>
 	)

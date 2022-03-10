@@ -48,9 +48,10 @@ const Roadmap = () => {
 					<img src={RoadmapSquare3} alt="RoadmapSquare3" />
 
 					<div className="text">
-						<h2>3 DROP</h2>
+						<h2>3 EARN</h2>
 
 						<ul>
+							<li>DAO Royalties distribution</li>
 							<li>Merchandise drop</li>
 							<li>NFT drop</li>
 						</ul>

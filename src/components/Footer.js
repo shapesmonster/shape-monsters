@@ -6,7 +6,7 @@ const Footer = () => {
 	return (
 		<div className="footer">
 			<img src={BangBangLab} alt="BangBangLab" />
-			<a className="twitter_icon" target="_blank" rel="noreferrer" href="https://twitter.com/">
+			<a className="twitter_icon" target="_blank" rel="noreferrer" href="https://twitter.com/ShapeMonsters">
 				<img src={TwitterImg} alt="twitter" />
 			</a>
 			<img src={Tofu} alt="Tofu" />

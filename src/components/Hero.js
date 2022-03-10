@@ -10,13 +10,18 @@ const Hero = () => {
 		<div className="hero_section">
 			<img className="shape_monster" src={ShapeMonsters} alt="ShapeMonsters" />
 
-			<p>Shape Monster are one of the first NFT collections on the Moonbeam Network consisting of 1,111 algorithmically generated NFTs. </p>
+
 
 			<div className="monsters_row">
 				<img src={YellowMonster} alt="YellowMonster" />
 				<img src={PinkMonster} alt="PinkMonster" />
 				<img src={GoldMonster} alt="GoldMonster" />
 			</div>
+			<p> </p>
+			<p> </p>
+			<p> </p>
+			<p>Earn passive income with Shape Monsters!</p>
+			<p>Shape Monsters are one of the first NFT collections on the Moonbeam Network consisting of 1,111 algorithmically generated NFTs. </p>
 
 			<h2>PUBLIC SALE: TO BE ANNOUNCED</h2>
 
