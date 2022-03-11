@@ -21,12 +21,12 @@ const Hero = () => {
 			<p> </p>
 			<p> </p>
 			<p>Earn passive income with Shape Monsters!</p>
-			<p>Shape Monsters are one of the first NFT collections on the Moonbeam Network consisting of 1,111 algorithmically generated NFTs. </p>
+			<p>Shape Monsters are one of the first NFT collections on the Moonbeam Network consisting of 2,222 algorithmically generated NFTs. </p>
 
 			<h2>PUBLIC SALE: TO BE ANNOUNCED</h2>
 
 			<div className="minted">
-				<h1>0/1111</h1>
+				<h1>0/2222</h1>
 				<span>minted</span>
 			</div>
 
