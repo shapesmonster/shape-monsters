@@ -1,5 +1,5 @@
 import AboutHeading from '../assets/AboutHeading.png'
-import AboutMonters from '../assets/AboutMonters.png'
+import AboutMonters from '../assets/couple.png'
 
 const About = () => {
 	return (
