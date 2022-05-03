@@ -1,5 +1,6 @@
 import { useWeb3React} from "@web3-react/core"
 import { useState, useEffect } from 'react'
+import Web3 from 'web3'
 
 import ShapeMonsters from '../assets/ShapeMonsters.png'
 import YellowMonster from '../assets/yellow_01.png'
@@ -8,13 +9,57 @@ import GoldMonster from '../assets/green_01.png'
 import MintingArrows from '../assets/MintingArrows.png'
 import ArrowUp from '../assets/ArrowUp.png'
 
+const address = require('../config/address.json')
+
 const Hero = ({connect}) => {
 	const context = useWeb3React()
-	const {account} = context
+	const {account, chainId} = context
 
-	function mint() {
+	const [web3, setWeb3] = useState()
+	const [contract, setContract] = useState()
+	const [totalSupply, setTotalSupply] = useState(0)
 
+	async function mint() {
+		if(chainId == undefined) return
+		// console.log("contract:", contract)
+		try {
+			const receipt = await contract.methods.baseURI().call()
+			// .send({
+			// 	from:account
+			// })
+			console.log("Receipt:", receipt)
+		} catch(e) {
+			console.log("Error while minting:", e)
+		}
 	}
+	useEffect(() => {
+		if (chainId == undefined || web3 == undefined) return
+			contract.methods.totalSupply().call().then((supply)=>{
+				// console.log("supply:", supply)
+				setTotalSupply(supply)
+			})
+
+	}, [contract, chainId])
+
+
+	useEffect(() => {
+		if (chainId == undefined || web3 == undefined) return
+		const contractAddress = address.address
+    const abi = require('../config/abi.json')
+
+		setContract(new web3.eth.Contract(abi, contractAddress))
+	}, [chainId, web3])
+
+	useEffect(() => {
+		try {
+			setWeb3(new Web3(window.web3.currentProvider, null, {
+				transactionConfirmationBlocks: 1
+			}))
+		} catch(e) {
+			console.log("Error:", e)
+		}
+
+	}, [])
 	useEffect(()=>{
 		console.log("Account Hero: ", account)
 	}, [account])
@@ -38,7 +83,7 @@ const Hero = ({connect}) => {
 			<h2>PUBLIC SALE: MAY 4th, 2022</h2>
 
 			<div className="minted">
-				<h1>0/2222</h1>
+				<h1>{totalSupply}/2222</h1>
 				<span>minted</span>
 			</div>
 
