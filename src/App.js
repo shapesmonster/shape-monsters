@@ -1,4 +1,8 @@
 import { useWeb3React} from "@web3-react/core"
+import { Web3ReactProvider } from '@web3-react/core'
+import Web3 from 'web3'
+
+import {injected} from "./utils/Connector"
 // import Web3 from 'web3'
 import Hero from './components/Hero'
 import Navbar from './components/Navbar'
@@ -11,7 +15,6 @@ import Helmet from 'react-helmet'
 
 
 
-// import { Web3ReactProvider } from '@web3-react/core'
 
 // import Web3Provider from 'web3-react'
 // import { Connectors } from 'web3-react'
@@ -43,6 +46,22 @@ function App() {
 		chainId
 	} = useWeb3React()
 
+	async function connect() {
+    try {
+			console.log("connecting")
+      await activate(injected)
+    } catch (ex) {
+      console.log(ex)
+    }
+  }
+
+	async function disconnect() {
+		try {
+			deactivate()
+		} catch (ex) {
+			console.log(ex)
+		}
+	}
 	return (
 			<div className="App">
 				<Helmet>
@@ -68,7 +87,7 @@ function App() {
 					<meta name="twitter:description" content="Shape Monster are one of the first NFT collections on the Moonbeam Network consisting of 1,111 algorithmically generated NFTs. "/>
 					<meta name="twitter:image" content="https://shapes.monster/static/media/YellowMonster.d60dc68eadb27e76eddb.png"/>
 				</Helmet>
-				<Navbar />
+				<Navbar connect={connect}/>
 				<Hero />
 				<About />
 				<Roadmap />

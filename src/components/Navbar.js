@@ -2,7 +2,7 @@ import TwitterImg from '../assets/TwitterImg.png'
 import discord from '../assets/discord.png'
 
 
-const Navbar = () => {
+const Navbar = ({connect}) => {
 	return (
 		<div className="navbar">
 			<a className="discord_icon" target="_blank" rel="noreferrer" href="https://discord.gg/S5mM2BjsTp">
@@ -12,7 +12,7 @@ const Navbar = () => {
 				<img src={TwitterImg} alt="twitter" />
 			</a>
 
-			<button className="wallet_btn">connect wallet</button>
+			<button className="wallet_btn" onClick={connect}>connect wallet</button>
 		</div>
 	)
 }
