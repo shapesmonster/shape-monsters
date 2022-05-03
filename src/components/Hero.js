@@ -2,6 +2,8 @@ import { useWeb3React} from "@web3-react/core"
 import { useState, useEffect } from 'react'
 import Web3 from 'web3'
 
+import MintDialog from './MintDialog'
+
 import ShapeMonsters from '../assets/ShapeMonsters.png'
 import YellowMonster from '../assets/yellow_01.png'
 import PinkMonster from '../assets/pink_01.png'
@@ -18,10 +20,26 @@ const Hero = ({connect}) => {
 	const [web3, setWeb3] = useState()
 	const [contract, setContract] = useState()
 	const [totalSupply, setTotalSupply] = useState(0)
+	const [open, setOpen] = useState(false)
+ 	const [amount, setAmount] = useState(1)
+	// const handleClickToOpen = () => {
+	// 	setOpen(true);
+	// };
+
+	const handleCounterUp = () => {
+		setAmount(amount+1)
+	}
+	const handleCounterDown = () => {
+		setAmount(amount-1)
+	}
+	const handleToClose = () => {
+		setOpen(false);
+	};
 
 	async function mint() {
 		if(chainId == undefined) return
 		// console.log("contract:", contract)
+		setOpen(true)
 		try {
 			const receipt = await contract.methods.baseURI().call()
 			// .send({
@@ -33,7 +51,7 @@ const Hero = ({connect}) => {
 		}
 	}
 	useEffect(() => {
-		if (chainId == undefined || web3 == undefined) return
+		if (chainId == undefined || contract == undefined) return
 			contract.methods.totalSupply().call().then((supply)=>{
 				// console.log("supply:", supply)
 				setTotalSupply(supply)
@@ -65,6 +83,7 @@ const Hero = ({connect}) => {
 	}, [account])
 	return (
 		<div className="hero_section">
+		<MintDialog open={open} onClose={handleToClose} amount={amount} handleCounterUp={handleCounterUp} handleCounterDown={handleCounterDown}/>
 			<img className="shape_monster" src={ShapeMonsters} alt="ShapeMonsters" />
 
 
