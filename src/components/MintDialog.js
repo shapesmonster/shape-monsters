@@ -11,7 +11,9 @@ export default function MintDialog({
   onClose,
   amount,
   handleCounterUp,
-  handleCounterDown
+  handleCounterDown,
+  handleMint,
+  processingTx
 }) {
 
 
@@ -33,11 +35,13 @@ return (
 		</DialogContentText>
 		</DialogContent>
 		<DialogActions>
-    <Button onClick={onClose}
+    <Button onClick={handleMint}
     color="primary" autoFocus>
     MINT
     </Button>
 		</DialogActions>
+    {processingTx &&
+      (<DialogContentText>Accept tx in Metamask</DialogContentText>)}
 	</Dialog>
 );
 }

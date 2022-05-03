@@ -11,7 +11,9 @@ import GoldMonster from '../assets/green_01.png'
 import MintingArrows from '../assets/MintingArrows.png'
 import ArrowUp from '../assets/ArrowUp.png'
 
-const address = require('../config/address.json')
+const contractAddress = require('../config/address.json')
+const freeMintAddresses = require('../config/freemint.json')
+const whiteListAddresses = require('../config/whitelist.json')
 
 const Hero = ({connect}) => {
 	const context = useWeb3React()
@@ -22,14 +24,43 @@ const Hero = ({connect}) => {
 	const [totalSupply, setTotalSupply] = useState(0)
 	const [open, setOpen] = useState(false)
  	const [amount, setAmount] = useState(1)
+	const [contractMethod, setContractMethod] = useState()
+
+	const [isFreemintActive, setIsFreemintActive] = useState(false)
+	const [isWhitelistActive, setIsWhitelistActive] = useState(false)
+	const [isMintActive, setIsMintActive] = useState(false)
+	const [processingTx, setProcessingTx ] =useState(false)
 	// const handleClickToOpen = () => {
 	// 	setOpen(true);
 	// };
 
+	const handleMint = () => {
+		if(contract == undefined) return
+		console.log("Minting")
+		setProcessingTx(true)
+		try {
+			contractMethod
+			.send({
+				from:account
+			}).then((receipt)=>{
+
+				console.log("Receipt:", receipt)
+				setProcessingTx(false)
+			}).catch((e)=>{
+				console.log("error",e)
+				setProcessingTx(false)
+
+			})
+		} catch(e) {
+			console.log("Error while minting:", e)
+		}
+
+	}
 	const handleCounterUp = () => {
 		setAmount(amount+1)
 	}
 	const handleCounterDown = () => {
+		if(amount == 1) return
 		setAmount(amount-1)
 	}
 	const handleToClose = () => {
@@ -39,22 +70,71 @@ const Hero = ({connect}) => {
 	async function mint() {
 		if(chainId == undefined) return
 		// console.log("contract:", contract)
-		setOpen(true)
-		try {
-			const receipt = await contract.methods.baseURI().call()
-			// .send({
-			// 	from:account
-			// })
-			console.log("Receipt:", receipt)
-		} catch(e) {
-			console.log("Error while minting:", e)
+		if(hasFreemint(account) && isFreemintActive) {
+			setProcessingTx(true)
+			contractMethod
+			.send({
+				from:account
+			})
+			setProcessingTx(false)
+			return
+		} else if ((hasWhiteList(account) && isWhitelistActive) || isMintActive ) {
+
+			setOpen(true)
 		}
+
+
 	}
+
+	function hasFreemint(address){
+		return address in freeMintAddresses
+	}
+	function getProofFreemint(address){
+		return freeMintAddresses[address]
+	}
+	function hasWhiteList(address){
+		return address in whiteListAddresses
+	}
+	function getProofWhiteList(address){
+		return whiteListAddresses[address]
+	}
+	// Set contract method depending on user
+	// if user in freemint, contractmethod will be freemint
+	// if user in whitelistMint, contractMethod will be whitelistMint
+	// if user in non of them, contractMethod will be mint
+
+	useEffect(() => {
+		if (chainId == undefined || contract == undefined) return
+		if(hasFreemint(account)) {
+			console.log("It has freemint")
+			setContractMethod(contract.methods.freeMint(getProofFreemint(account)))
+			return
+		} else
+		if(hasWhiteList(account) && isWhitelistActive){
+			console.log("It has whitelist")
+			setContractMethod(contract.methods.mintListed(amount, getProofWhiteList(account)))
+			return
+		} else {
+			setContractMethod(contract.methods.mint(amount))
+		}
+
+		// console.log("It has not freemint")
+	}, [contract, chainId, amount])
+
 	useEffect(() => {
 		if (chainId == undefined || contract == undefined) return
 			contract.methods.totalSupply().call().then((supply)=>{
 				// console.log("supply:", supply)
 				setTotalSupply(supply)
+			})
+			contract.methods.isFreemintActive().call().then((result)=>{
+				setIsFreemintActive(result)
+			})
+			contract.methods.isWhitelistActive().call().then((result)=>{
+				setIsWhitelistActive(result)
+			})
+			contract.methods.isMintActive().call().then((result)=>{
+				setIsMintActive(result)
 			})
 
 	}, [contract, chainId])
@@ -62,10 +142,9 @@ const Hero = ({connect}) => {
 
 	useEffect(() => {
 		if (chainId == undefined || web3 == undefined) return
-		const contractAddress = address.address
     const abi = require('../config/abi.json')
 
-		setContract(new web3.eth.Contract(abi, contractAddress))
+		setContract(new web3.eth.Contract(abi, contractAddress.address))
 	}, [chainId, web3])
 
 	useEffect(() => {
@@ -83,7 +162,15 @@ const Hero = ({connect}) => {
 	}, [account])
 	return (
 		<div className="hero_section">
-		<MintDialog open={open} onClose={handleToClose} amount={amount} handleCounterUp={handleCounterUp} handleCounterDown={handleCounterDown}/>
+		<MintDialog
+			open={open}
+			onClose={handleToClose}
+			amount={amount}
+			handleCounterUp={handleCounterUp}
+			handleCounterDown={handleCounterDown}
+			handleMint={handleMint}
+			processingTx={processingTx}
+			/>
 			<img className="shape_monster" src={ShapeMonsters} alt="ShapeMonsters" />
 
 
