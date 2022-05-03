@@ -1,12 +1,17 @@
+import { useWeb3React} from "@web3-react/core"
+// import Web3 from 'web3'
 import Hero from './components/Hero'
 import Navbar from './components/Navbar'
 import About from './components/About'
 import Roadmap from './components/Roadmap'
 import Team from './components/Team'
+import Stella from './components/Stella'
 import Footer from './components/Footer'
 import Helmet from 'react-helmet'
 
-import { useWeb3React} from "@web3-react/core"
+
+
+// import { Web3ReactProvider } from '@web3-react/core'
 
 // import Web3Provider from 'web3-react'
 // import { Connectors } from 'web3-react'
@@ -37,7 +42,7 @@ function App() {
 		deactivate,
 		chainId
 	} = useWeb3React()
-	
+
 	return (
 			<div className="App">
 				<Helmet>
@@ -67,6 +72,7 @@ function App() {
 				<Hero />
 				<About />
 				<Roadmap />
+				<Stella />
 				{/* <Team />*/}
 				<Footer />
 			</div>

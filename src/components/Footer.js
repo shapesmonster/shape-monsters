@@ -6,7 +6,9 @@ import Discord from '../assets/discord.png'
 const Footer = () => {
 	return (
 		<div className="footer">
-			<img src={BangBangLab} alt="BangBangLab" />
+			<a className="BangBangLab_icon" target="_blank" rel="noreferrer" href="https://bangbanglab.ju.mp">
+				<img src={BangBangLab} alt="BangBangLab" />
+			</a>
 			<a className="discord_icon" target="_blank" rel="noreferrer" href="https://discord.gg/S5mM2BjsTp">
 				<img src={Discord} alt="discord" />
 			</a>
