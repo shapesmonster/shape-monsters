@@ -20,7 +20,7 @@ export default function MintDialog({
 
 return (
 	<Dialog open={open} onClose={onClose}>
-		<DialogTitle>{"How many?"}</DialogTitle>
+		<DialogTitle>{"Enter the amount of NFT you want to mint:"}</DialogTitle>
 		<DialogContent>
 		<DialogContentText>
     Amount: {amount}
@@ -41,7 +41,7 @@ return (
     </Button>
 		</DialogActions>
     {processingTx &&
-      (<DialogContentText>Accept tx in Metamask</DialogContentText>)}
+      (<DialogContentText style={{paddingLeft: '25px'}}>Accept tx in Metamask</DialogContentText>)}
 	</Dialog>
 );
 }

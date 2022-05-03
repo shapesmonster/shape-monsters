@@ -30,6 +30,13 @@ const Hero = ({connect}) => {
 	const [isWhitelistActive, setIsWhitelistActive] = useState(false)
 	const [isMintActive, setIsMintActive] = useState(false)
 	const [processingTx, setProcessingTx ] =useState(false)
+	const [mintType, setMintType] = useState("")
+	const [message, setMessage] = useState("")
+
+
+	const [contractFreeMint, setContractFreeMint] = useState()
+	const [contractMintListed, setContractMintListed] = useState()
+	const [contractMint, setContractMint] = useState()
 	// const handleClickToOpen = () => {
 	// 	setOpen(true);
 	// };
@@ -37,24 +44,28 @@ const Hero = ({connect}) => {
 	const handleMint = () => {
 		if(contract == undefined) return
 		console.log("Minting")
+		// console.log("web3", web3.utils.toWei('5','ether'))
+		// set price
+		const price = mintType=="mint"?8:5
+
+		const valueInt = price*amount
+		const value = web3.utils.toWei(valueInt.toString())
+		console.log("after declaring value")
+		console.log("Value:", value.toString())
 		setProcessingTx(true)
-		try {
-			contractMethod
-			.send({
-				from:account
-			}).then((receipt)=>{
+		// call function
+		var callFunction;
 
-				console.log("Receipt:", receipt)
-				setProcessingTx(false)
-			}).catch((e)=>{
-				console.log("error",e)
-				setProcessingTx(false)
-
-			})
-		} catch(e) {
-			console.log("Error while minting:", e)
+		if(mintType=="mint") {
+			callFunction = contractMint(amount)
+		} else {
+			callFunction = contract.methods.mintListed(amount, getProofWhiteList(account))
 		}
 
+		callFunction.send({
+			from: account,
+			value: value
+		})
 	}
 	const handleCounterUp = () => {
 		setAmount(amount+1)
@@ -70,21 +81,43 @@ const Hero = ({connect}) => {
 	async function mint() {
 		if(chainId == undefined) return
 		// console.log("contract:", contract)
+		setMintType("mint")
+		setOpen(true)
+		setMessage("")
+	}
+	async function freeMint() {
+		if(chainId == undefined) return
+		console.log("freeMint")
 		if(hasFreemint(account) && isFreemintActive) {
+			setMessage("Please, confirm transaction")
 			setProcessingTx(true)
-			contractMethod
+			contractFreeMint(getProofFreemint(account))
 			.send({
 				from:account
 			})
 			setProcessingTx(false)
+			setMessage("")
 			return
-		} else if ((hasWhiteList(account) && isWhitelistActive) || isMintActive ) {
-
-			setOpen(true)
+		} else {
+			setMessage("Not allowed to Free Mint")
 		}
-
-
 	}
+	async function whiteListMint() {
+		if(chainId == undefined) return
+		console.log("whiteListMint")
+		if (hasWhiteList(account) && isWhitelistActive) {
+			setMessage("")
+			setProcessingTx(true)
+			setMintType("whiteList")
+			setOpen(true)
+			// contractMintListed(amount, getProofWhiteList(account))
+			setProcessingTx(false)
+			return
+		} else {
+			setMessage("Not allowed to White List Mint")
+		}
+	}
+
 
 	function hasFreemint(address){
 		return address in freeMintAddresses
@@ -99,24 +132,19 @@ const Hero = ({connect}) => {
 		return whiteListAddresses[address]
 	}
 	// Set contract method depending on user
-	// if user in freemint, contractmethod will be freemint
-	// if user in whitelistMint, contractMethod will be whitelistMint
-	// if user in non of them, contractMethod will be mint
+	// if user in freemint,
+	// if user in whitelistMint
+	// if user in non of them
 
 	useEffect(() => {
 		if (chainId == undefined || contract == undefined) return
-		if(hasFreemint(account)) {
-			console.log("It has freemint")
-			setContractMethod(contract.methods.freeMint(getProofFreemint(account)))
-			return
-		} else
-		if(hasWhiteList(account) && isWhitelistActive){
-			console.log("It has whitelist")
-			setContractMethod(contract.methods.mintListed(amount, getProofWhiteList(account)))
-			return
-		} else {
-			setContractMethod(contract.methods.mint(amount))
-		}
+
+		console.log("setting Contract function")
+		setContractFreeMint(contract.methods.freeMint)
+		// setContractMintListed(contract.methods.mintListed)
+		setContractMint(contract.methods.mint)
+		// (amount)
+
 
 		// console.log("It has not freemint")
 	}, [contract, chainId, amount])
@@ -194,8 +222,10 @@ const Hero = ({connect}) => {
 			</div>
 
 			<div className="mint_button_container">
-				<img src={MintingArrows} alt="MintingArrows" />
-				<button onClick={account?mint:connect}>{account?"MINT":"Connect Wallet"}</button>
+				<button onClick={account?mint:connect}>{account?"MINT":"Connect"}</button>
+				<button onClick={account?freeMint:connect}>{account?"Free MINT":"Connect"}</button>
+				<button onClick={account?whiteListMint:connect}>{account?"White List MINT":"Connect"}</button>
+				<div style={{color: 'red'}}> {message} </div>
 			</div>
 
 			<img className="up_arrow" src={ArrowUp} alt="ArrowUp" />
