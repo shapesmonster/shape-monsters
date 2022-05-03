@@ -1,6 +1,9 @@
+import { useState, useEffect } from 'react'
 import { useWeb3React} from "@web3-react/core"
 import { Web3ReactProvider } from '@web3-react/core'
 import Web3 from 'web3'
+import { Web3Provider } from "@ethersproject/providers";
+// import { InjectedConnector } from '@web3-react/injected-connector'
 
 import {injected} from "./utils/Connector"
 // import Web3 from 'web3'
@@ -13,29 +16,12 @@ import Stella from './components/Stella'
 import Footer from './components/Footer'
 import Helmet from 'react-helmet'
 
+function getLibrary(provider) {
+  return new Web3(provider)
+}
 
-
-
-// import Web3Provider from 'web3-react'
-// import { Connectors } from 'web3-react'
-// const { InjectedConnector, NetworkOnlyConnector } = Connectors
-//
-// const MetaMask = new InjectedConnector({ supportedNetworks: [1, 4] })
-
-// const Infura = new NetworkOnlyConnector({
-//   providerURL: 'https://mainnet.infura.io/v3/...'
-// })
-
-// const connectors = { MetaMask, Infura }
-// const connectors = { MetaMask }
-// <Web3Provider
-// connectors={connectors}
-// libraryName={'web3.js'}
-// >
-// </Web3Provider>
-
-
-function App() {
+const App = () => {
+// function App() {
 	const {
 		active,
 		account,
@@ -62,6 +48,25 @@ function App() {
 			console.log(ex)
 		}
 	}
+
+	const [web3, setWeb3] = useState()
+	const [installMetamask, setInstallMetamask] = useState(false)
+
+
+	useEffect(() => {
+		console.log("setting web3 react")
+    try {
+      setWeb3(new Web3(window.web3.currentProvider, null, {
+        transactionConfirmationBlocks: 1
+      }))
+    } catch(e) {
+      setInstallMetamask(true)
+    }
+  }, [])
+
+	useEffect(() => {
+		console.log("Web3:", web3)
+	}, [web3])
 	return (
 			<div className="App">
 				<Helmet>
@@ -87,8 +92,8 @@ function App() {
 					<meta name="twitter:description" content="Shape Monster are one of the first NFT collections on the Moonbeam Network consisting of 1,111 algorithmically generated NFTs. "/>
 					<meta name="twitter:image" content="https://shapes.monster/static/media/YellowMonster.d60dc68eadb27e76eddb.png"/>
 				</Helmet>
-				<Navbar connect={connect}/>
-				<Hero />
+				<Navbar connect={connect} disconnect={disconnect}/>
+				<Hero connect={connect}/>
 				<About />
 				<Roadmap />
 				<Stella />

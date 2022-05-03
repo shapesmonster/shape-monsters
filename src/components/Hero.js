@@ -1,3 +1,6 @@
+import { useWeb3React} from "@web3-react/core"
+import { useState, useEffect } from 'react'
+
 import ShapeMonsters from '../assets/ShapeMonsters.png'
 import YellowMonster from '../assets/yellow_01.png'
 import PinkMonster from '../assets/pink_01.png'
@@ -5,7 +8,16 @@ import GoldMonster from '../assets/green_01.png'
 import MintingArrows from '../assets/MintingArrows.png'
 import ArrowUp from '../assets/ArrowUp.png'
 
-const Hero = () => {
+const Hero = ({connect}) => {
+	const context = useWeb3React()
+	const {account} = context
+
+	function mint() {
+
+	}
+	useEffect(()=>{
+		console.log("Account Hero: ", account)
+	}, [account])
 	return (
 		<div className="hero_section">
 			<img className="shape_monster" src={ShapeMonsters} alt="ShapeMonsters" />
@@ -32,7 +44,7 @@ const Hero = () => {
 
 			<div className="mint_button_container">
 				<img src={MintingArrows} alt="MintingArrows" />
-				<button>MINT</button>
+				<button onClick={account?mint:connect}>{account?"MINT":"Connect Wallet"}</button>
 			</div>
 
 			<img className="up_arrow" src={ArrowUp} alt="ArrowUp" />
