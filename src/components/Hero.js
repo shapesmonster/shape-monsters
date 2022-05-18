@@ -33,19 +33,12 @@ const Hero = ({connect}) => {
 	const [mintType, setMintType] = useState("")
 	const [message, setMessage] = useState("")
 
-
-	const [contractFreeMint, setContractFreeMint] = useState()
-	const [contractMintListed, setContractMintListed] = useState()
-	const [contractMint, setContractMint] = useState()
-	// const handleClickToOpen = () => {
-	// 	setOpen(true);
-	// };
-
 	const handleMint = () => {
 		if(contract == undefined) return
 		console.log("Minting")
 		// console.log("web3", web3.utils.toWei('5','ether'))
 		// set price
+		console.log("mintType:", mintType)
 		const price = mintType=="mint"?8:5
 
 		const valueInt = price*amount
@@ -57,7 +50,7 @@ const Hero = ({connect}) => {
 		var callFunction;
 
 		if(mintType=="mint") {
-			callFunction = contractMint(amount)
+			callFunction = contract.methods.mint(amount)
 		} else {
 			callFunction = contract.methods.mintListed(amount, getProofWhiteList(account))
 		}
@@ -80,7 +73,12 @@ const Hero = ({connect}) => {
 
 	async function mint() {
 		if(chainId == undefined) return
+		if (!isMintActive) {
+			setMessage("Sale is closed")
+			return
+		}
 		// console.log("contract:", contract)
+		console.log("inside mint")
 		setMintType("mint")
 		setOpen(true)
 		setMessage("")
@@ -91,7 +89,7 @@ const Hero = ({connect}) => {
 		if(hasFreemint(account) && isFreemintActive) {
 			setMessage("Please, confirm transaction")
 			setProcessingTx(true)
-			contractFreeMint(getProofFreemint(account))
+			contract.methods.freeMint(getProofFreemint(account))
 			.send({
 				from:account
 			})
@@ -131,23 +129,6 @@ const Hero = ({connect}) => {
 	function getProofWhiteList(address){
 		return whiteListAddresses[address]
 	}
-	// Set contract method depending on user
-	// if user in freemint,
-	// if user in whitelistMint
-	// if user in non of them
-
-	useEffect(() => {
-		if (chainId == undefined || contract == undefined) return
-
-		console.log("setting Contract function")
-		setContractFreeMint(contract.methods.freeMint)
-		// setContractMintListed(contract.methods.mintListed)
-		setContractMint(contract.methods.mint)
-		// (amount)
-
-
-		// console.log("It has not freemint")
-	}, [contract, chainId, amount])
 
 	useEffect(() => {
 		if (chainId == undefined || contract == undefined) return
@@ -212,19 +193,16 @@ const Hero = ({connect}) => {
 			<p> </p>
 			<p> </p>
 			<p>Earn passive income with Shape Monsters!</p>
-			<p>Shape Monsters are one of the first NFT collections on the Moonbeam Network consisting of 2,222 algorithmically generated NFTs. </p>
+			<p>Shape Monsters are one of the first NFT collections on the Moonbeam Network consisting of 222 algorithmically generated NFTs. </p>
 
-			<h2>PUBLIC SALE: MAY 4th, 2022</h2>
 
 			<div className="minted">
-				<h1>{totalSupply}/2222</h1>
+				<h1>{totalSupply}/222</h1>
 				<span>minted</span>
 			</div>
 
 			<div className="mint_button_container">
 				<button onClick={account?mint:connect}>{account?"MINT":"Connect"}</button>
-				<button onClick={account?freeMint:connect}>{account?"Free MINT":"Connect"}</button>
-				<button onClick={account?whiteListMint:connect}>{account?"White List MINT":"Connect"}</button>
 				<div style={{color: 'red'}}> {message} </div>
 			</div>
 
